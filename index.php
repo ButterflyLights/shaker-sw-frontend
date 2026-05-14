@@ -12,8 +12,12 @@
 
     <h1>Nachricht senden</h1>
 
-    <button onclick="sendData()">
-        JSON absenden
+    <button onclick="sendMeasurement()">
+        Messung starten
+    </button>
+
+    <button onclick="sendStop()">
+        Messung stoppen
     </button>
 
     <div id="response" class="response"></div>
@@ -22,7 +26,8 @@
 
 <script>
 
-async function sendData() {
+async function sendRequest(payload) {
+
     const response = await fetch("send.php", {
 
         method: "POST",
@@ -31,21 +36,34 @@ async function sendData() {
             "Content-Type": "application/json"
         },
 
-        body: JSON.stringify({
-            command: "start-measurement",
-            signalType: "sweep",
-            signalParams: {
-              amplitude: 0.05,
-              freqStart: 100,
-              freqEnd: 1000,
-              sweepRate: 0.5
-            }
-        })
+        body: JSON.stringify(payload)
     });
 
     const text = await response.text();
-
     document.getElementById("response").innerText = text;
+}
+
+
+// 1. Button: Messung starten
+function sendMeasurement() {
+    sendRequest({
+        command: "start-measurement",
+        signalType: "sweep",
+        signalParams: {
+            amplitude: 0.05,
+            freqStart: 100,
+            freqEnd: 1000,
+            sweepRate: 0.5
+        }
+    });
+}
+
+
+// 2. Button: Messung stoppen
+function sendStop() {
+    sendRequest({
+        command: "stop-measurement"
+    });
 }
 
 </script>
