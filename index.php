@@ -26,6 +26,13 @@
 
 <script>
 
+let pollingInterval = null;
+
+
+// --------------------------------------------------
+// Allgemeine Request Funktion
+// --------------------------------------------------
+
 async function sendRequest(payload) {
 
     const response = await fetch("send.php", {
@@ -40,15 +47,87 @@ async function sendRequest(payload) {
     });
 
     const text = await response.text();
-    document.getElementById("response").innerText = text;
+
+    // document.getElementById("response").innerText = text;
+
+    return text;
 }
 
 
-// 1. Button: Messung starten
-function sendMeasurement() {
-    sendRequest({
+// --------------------------------------------------
+// Polling Funktion
+// --------------------------------------------------
+
+async function pollStatus() {
+
+    try {
+
+        const response = await fetch(
+            "http://127.0.0.1:8000/status"
+        );
+
+        const data = await response.json();
+
+        console.log(data);
+
+        document.getElementById("response").innerText =
+            "Status: " + data.status;
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+
+// --------------------------------------------------
+// Polling starten
+// --------------------------------------------------
+
+function startPolling() {
+
+    // verhindert doppeltes Polling
+    if (pollingInterval !== null) {
+        return;
+    }
+
+    pollingInterval = setInterval(
+        pollStatus,
+        500
+    );
+
+    console.log("Polling gestartet");
+}
+
+
+// --------------------------------------------------
+// Polling stoppen
+// --------------------------------------------------
+
+function stopPolling() {
+
+    if (pollingInterval !== null) {
+
+        clearInterval(pollingInterval);
+
+        pollingInterval = null;
+
+        console.log("Polling gestoppt");
+    }
+}
+
+
+// --------------------------------------------------
+// Messung starten
+// --------------------------------------------------
+
+async function sendMeasurement() {
+
+    const responseText = await sendRequest({
+
         command: "start-measurement",
+
         signalType: "sweep",
+
         signalParams: {
             amplitude: 0.05,
             freqStart: 100,
@@ -59,12 +138,18 @@ function sendMeasurement() {
 }
 
 
-// 2. Button: Messung stoppen
-function sendStop() {
-    sendRequest({
+// --------------------------------------------------
+// Messung stoppen
+// --------------------------------------------------
+
+async function sendStop() {
+
+    await sendRequest({
         command: "stop-measurement"
     });
 }
+
+startPolling();
 
 </script>
 
