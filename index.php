@@ -1,3 +1,7 @@
+<?php
+require "config.php";
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -63,7 +67,7 @@ async function pollStatus() {
     try {
 
         const response = await fetch(
-            "http://127.0.0.1:8000/status"
+            "<?php echo "http://" . $config['backendHost'] . ":" . $config['backendPort'] . "/status" ; ?>"
         );
 
         const data = await response.json();
