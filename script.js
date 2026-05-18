@@ -2,6 +2,15 @@ let backendUrl = "http://localhost:8000/status"; // TODO: read from config file
 let pollingInterval = null;
 let selectedProfile = null;
 
+function omitId(obj) {
+    const { id, ...rest } = obj;
+    return rest;
+}
+
+function isEqualProfiles(a, b) {
+    return JSON.stringify(omitId(a)) === JSON.stringify(b);
+}
+
 async function sendRequest(payload) {
 
     const response = await fetch("send.php", {
@@ -162,7 +171,7 @@ async function loadProfile(profileId) {
 
         if (data.success) {
             for (var key in selectedProfile) {
-                // if (key != "id") {
+                if (key != "id") {
                     const row = document.createElement("tr");
                     
                     row.innerHTML = `
@@ -171,7 +180,7 @@ async function loadProfile(profileId) {
                     `;
         
                     tbody.appendChild(row);
-                // }
+                }
             }
 
 
@@ -205,36 +214,43 @@ async function saveProfile() {
         
         let newSelectedProfile = {};
         for (var key in selectedProfile) {
-            if (key != "id") {
-                newSelectedProfile[key] = document.getElementById(key).value;
+            try {
+                if (key != "id") {
+                    newSelectedProfile[key] = document.getElementById(key).value;
+                }  
+            } catch(err) {
+                console.log(err);
             }
         }
 
-        console.log(newSelectedProfile);
-
-        try {
-            const response = await fetch("save_profile.php", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(newSelectedProfile)
-            });
-
-            const data = await response.json();
-            console.log(data);
-
-            loadProfiles();
-
-        } catch (err) {
-
-            console.error(err);
-
-            document.getElementById("response").innerText =
-                "Fehler beim Speichern";
+        if (!isEqualProfiles(selectedProfile, newSelectedProfile)) {
+            try {
+                const response = await fetch("save_profile.php", {
+    
+                    method: "POST",
+    
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+    
+                    body: JSON.stringify(newSelectedProfile)
+                });
+    
+                const data = await response.json();
+                console.log(data);
+    
+                loadProfiles();
+    
+            } catch (err) {
+    
+                console.error(err);
+    
+                document.getElementById("response").innerText =
+                    "Fehler beim Speichern";
+            }
+        }
+        else {
+            console.log("no changes to profile");
         }
     }
 }
