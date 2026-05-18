@@ -31,8 +31,8 @@ textarea {
 }
 
 textarea {
-    height: 120px;
-    resize: vertical;
+    height: 40px;
+    resize: none;
 }
 
 button {
@@ -55,4 +55,21 @@ button:hover {
     background: #eeeeee;
     border-radius: 5px;
     white-space: pre-wrap;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 600px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+tr:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
 }

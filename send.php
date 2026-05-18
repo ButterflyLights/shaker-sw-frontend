@@ -21,3 +21,5 @@ $response = file_get_contents($url, false, $context);
 
 echo "Antwort vom Python-Server:\n";
 echo $response;
+
+?>
