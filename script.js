@@ -11,6 +11,10 @@ function isEqualProfiles(a, b) {
     return JSON.stringify(omitId(a)) === JSON.stringify(b);
 }
 
+function displayError(err) {
+    document.getElementById("response").innerText = err;
+}
+
 async function sendRequest(payload) {
 
     const response = await fetch("send.php", {
@@ -104,10 +108,6 @@ async function downloadData() {
 
 }
 
-async function newProfile() {
-
-}
-
 async function loadProfiles() {
     try {
         const response = await fetch("get_profiles.php");
@@ -140,8 +140,7 @@ async function loadProfiles() {
 
         console.error(err);
 
-        document.getElementById("response").innerText =
-            "Fehler beim Laden der Profile";
+        displayError("Error loading profiles");
     }
 }
 
@@ -171,7 +170,7 @@ async function loadProfile(profileId) {
 
         if (data.success) {
             for (var key in selectedProfile) {
-                if (key != "id") {
+                if (key != "id" && selectedProfile[key] != null) {
                     const row = document.createElement("tr");
                     
                     row.innerHTML = `
@@ -199,14 +198,8 @@ async function loadProfile(profileId) {
 
         console.error(err);
 
-        document.getElementById("response").innerText =
-            "Fehler beim Laden";
+        displayError("Error loading profile");
     }
-}
-
-
-async function uploadProfile() {
-  
 }
 
 async function saveProfile() {
@@ -223,7 +216,14 @@ async function saveProfile() {
             }
         }
 
+        if (newSelectedProfile.name.slice(0, 7) == 'default') {
+            displayError("Cannot save profile as default profile");
+            return;
+        }
+
         if (!isEqualProfiles(selectedProfile, newSelectedProfile)) {
+            console.log(newSelectedProfile);
+
             try {
                 const response = await fetch("save_profile.php", {
     
@@ -236,27 +236,25 @@ async function saveProfile() {
                     body: JSON.stringify(newSelectedProfile)
                 });
     
-                const data = await response.json();
-                console.log(data);
-    
+                const data = await response.text();
+                console.log("response:", data);
                 loadProfiles();
+                
+              } catch (err) {
     
-            } catch (err) {
-    
-                console.error(err);
-    
-                document.getElementById("response").innerText =
-                    "Fehler beim Speichern";
+                  console.error(err);
+      
+                  displayError("Error saving profile");
             }
         }
         else {
-            console.log("no changes to profile");
+            displayError("no changes to profile");
         }
     }
 }
 
 async function deleteProfile() {
-    if (selectedProfile != null) {
+    if (selectedProfile != null && selectedProfile.name.slice(0, 7) != 'default') {
         console.log(selectedProfile);
 
         try {
@@ -286,9 +284,11 @@ async function deleteProfile() {
 
             console.error(err);
 
-            document.getElementById("response").innerText =
-                "Fehler beim Löschen";
+            displayError("Error deleting profile");
         }
+    }
+    else if (selectedProfile.name.slice(0, 7) == 'default') {
+        displayError("Cannot delete default profile");
     }
 }
 

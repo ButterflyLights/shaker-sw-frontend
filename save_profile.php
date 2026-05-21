@@ -16,6 +16,41 @@ if (!$data || !is_array($data)) {
     ]));
 }
 
+// Check if name exists
+if (!isset($data["name"])) {
+    die(json_encode([
+        "success" => false,
+        "error" => "Missing profile name"
+    ]));
+}
+
+$name = $data["name"];
+
+// Prepare check query
+$checkSql = "SELECT id FROM $table WHERE name = ? LIMIT 1";
+$checkStmt = $conn->prepare($checkSql);
+
+if (!$checkStmt) {
+    die(json_encode([
+        "success" => false,
+        "error" => "Prepare check failed: " . $conn->error
+    ]));
+}
+
+$checkStmt->bind_param("s", $name);
+$checkStmt->execute();
+
+$result = $checkStmt->get_result();
+
+if ($result->num_rows > 0) {
+    die(json_encode([
+        "success" => false,
+        "error" => "Profile with this name already exists"
+    ]));
+}
+
+$checkStmt->close();
+
 // Get column names from JSON
 $columns = array_keys($data);
 
