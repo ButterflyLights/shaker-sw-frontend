@@ -12,7 +12,11 @@ function isEqualProfiles(a, b) {
 }
 
 function displayError(err) {
-    document.getElementById("response").innerText = err;
+    document.getElementById("error").innerText = err;
+}
+
+function displayStatus(status) {
+    document.getElementById("status").innerText = status;
 }
 
 function updateSelectedProfile() {
@@ -81,7 +85,7 @@ function startPolling() {
 
     pollingInterval = setInterval(
         pollStatus,
-        500
+        1000
     );
 
     console.log("Polling gestartet");
@@ -231,54 +235,35 @@ async function loadProfile(profileId) {
 async function saveProfile() {
     if (selectedProfile != null) {
         updateSelectedProfile();
-        // TODO: use selected profile instead of newSelectedProfile here
-        
-        let newSelectedProfile = {};
-        
-        
-        for (var key in selectedProfile) {
-            try {
-                if (key != "id") {
-                    newSelectedProfile[key] = document.getElementById(key).value;
-                }  
-            } catch(err) {
-                console.log(err);
-            }
-        }
 
-        if (newSelectedProfile.name.slice(0, 7) == 'default') {
+        // TODO: check if new profile is the same?
+
+        if (selectedProfile.name.slice(0, 7) == 'default') {
             displayError("Cannot save profile as default profile");
             return;
         }
 
-        if (!isEqualProfiles(selectedProfile, newSelectedProfile)) {
-            console.log(newSelectedProfile);
+        try {
+            const response = await fetch("save_profile.php", {
 
-            try {
-                const response = await fetch("save_profile.php", {
-    
-                    method: "POST",
-    
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-    
-                    body: JSON.stringify(newSelectedProfile)
-                });
-    
-                const data = await response.text();
-                console.log("response:", data);
-                loadProfiles();
-                
-              } catch (err) {
-    
-                  console.error(err);
-      
-                  displayError("Error saving profile");
-            }
-        }
-        else {
-            displayError("no changes to profile");
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(omitId(selectedProfile))
+            });
+
+            const data = await response.text();
+            console.log("response:", data);
+            loadProfiles();
+            
+        } catch (err) {
+
+              console.error(err);
+  
+              displayError("Error saving profile");
         }
     }
 }
@@ -323,4 +308,4 @@ async function deleteProfile() {
 }
 
 loadProfiles();
-// startPolling();
+startPolling();
