@@ -15,6 +15,25 @@ function displayError(err) {
     document.getElementById("response").innerText = err;
 }
 
+function updateSelectedProfile() {
+    for (var key in selectedProfile) {
+        try {
+            if (key != "id" && selectedProfile[key] != null) {
+                if (typeof(selectedProfile[key]) == "number") {
+                    selectedProfile[key] = Number(document.getElementById(key).value);
+                }
+                else {
+                    selectedProfile[key] = document.getElementById(key).value;
+                }
+            }
+          } catch(err) {
+            console.log(err);
+          }
+          
+    }
+    console.log(selectedProfile);
+}
+
 async function sendRequest(payload) {
 
     const response = await fetch("send.php", {
@@ -81,20 +100,27 @@ function stopPolling() {
 }
 
 async function sendMeasurement() {
+    if (selectedProfile != null) {
+        updateSelectedProfile();
 
-    const responseText = await sendRequest({
-
-        command: "start-measurement",
-
-        signalType: "sweep",
-
-        signalParams: {
-            amplitude: 0.05,
-            freqStart: 100,
-            freqEnd: 1000,
-            sweepRate: 0.5
+        params = {};
+    
+        for (var key in selectedProfile) {
+            if (key != 'type' && key != 'name' && key != 'id' && selectedProfile[key] != null) {
+                params[key] = selectedProfile[key];
+            }
         }
-    });
+    
+        msg = {
+            command: "start-measurement",
+            signalType: selectedProfile.type,
+            signalParams: params
+        };
+    
+        console.log(msg);
+    
+        const responseText = await sendRequest(msg);
+    }
 }
 
 async function sendStop() {
@@ -204,8 +230,12 @@ async function loadProfile(profileId) {
 
 async function saveProfile() {
     if (selectedProfile != null) {
+        updateSelectedProfile();
+        // TODO: use selected profile instead of newSelectedProfile here
         
         let newSelectedProfile = {};
+        
+        
         for (var key in selectedProfile) {
             try {
                 if (key != "id") {
