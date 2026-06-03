@@ -84,11 +84,9 @@ tr:hover {
     position: fixed;
     bottom: 20px;
     left: 20px;
-
-    /* background: white; */
+    
     padding: 12px 16px;
     border-radius: 8px;
-    /* box-shadow: 0 0 10px rgba(0,0,0,0.1); */
 
     font-size: 14px;
     z-index: 1000;

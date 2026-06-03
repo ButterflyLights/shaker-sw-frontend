@@ -203,10 +203,20 @@ async function loadProfile(profileId) {
                 if (key != "id" && selectedProfile[key] != null) {
                     const row = document.createElement("tr");
                     
-                    row.innerHTML = `
-                    <td><strong>${key}</strong></td>
-                        <td><textarea id=${key}>${selectedProfile[key]}</textarea></td>
-                    `;
+                    if (key === "type") {
+
+                        row.innerHTML = `
+                            <td><strong>${key}</strong></td>
+                            <td>${selectedProfile[key]}</td>
+                        `;
+                    }
+                    else {
+
+                        row.innerHTML = `
+                            <td><strong>${key}</strong></td>
+                            <td><textarea id="${key}">${selectedProfile[key]}</textarea></td>
+                        `;
+                    }
         
                     tbody.appendChild(row);
                 }
