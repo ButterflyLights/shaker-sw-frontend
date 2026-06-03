@@ -236,8 +236,6 @@ async function saveProfile() {
     if (selectedProfile != null) {
         updateSelectedProfile();
 
-        // TODO: check if new profile is the same?
-
         if (selectedProfile.name.slice(0, 7) == 'default') {
             displayError("Cannot save profile as default profile");
             return;

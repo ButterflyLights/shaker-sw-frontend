@@ -8,71 +8,76 @@
 </head>
 <body>
 
-<div class="box" id="profileBox">
-    <h2>Profiles</h2>
+<div class="row">
 
-    <button onclick="newProfile()">
-        New Profile
-    </button>
+    <div class="box" id="profileBox">
+        <h2>Profiles</h2>
+    
+        <table id="profileTable">
+    
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+    
+            <tbody>
+            </tbody>
+    
+        </table>
+    </div>
+    
+    <div class="box" id="profileDataBox">
+        <h2>Profile Data</h2>
+    
+        <button onclick="saveProfile()">
+            Save Profile
+        </button>
+    
+        <button onclick="deleteProfile()">
+            Delete Profile
+        </button>
+    
+        <table id="profileDataTable">
+    
+            <thead>
+            </thead>
+    
+            <tbody>
+            </tbody>
+    
+        </table>
+    </div>
 
-    <table id="profileTable">
+    <div class="box" id="measurementBox">
+        <h2>Measurement</h2>
+    
+        <button onclick="sendMeasurement()">
+            Start Measurement with Selected Profile
+        </button>
+    
+        <button onclick="sendStop()">
+            Stop Measurement
+        </button>
+    
+        <button onclick="downloadData()">
+            Download Data
+        </button>
+    
+        <div id="status" class="response"></div>
+    </div>
 
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        </tbody>
-
-    </table>
 </div>
 
-<div class="box" id="profileDataBox">
-    <h2>Profile Data</h2>
+<div class="row">
 
-    <button onclick="saveProfile()">
-        Save Profile
-    </button>
+    <div class="box">
+        <div id="error" class="response"></div>
+    </div>
 
-    <button onclick="deleteProfile()">
-        Delete Profile
-    </button>
-
-    <table id="profileDataTable">
-
-        <thead>
-        </thead>
-
-        <tbody>
-        </tbody>
-
-    </table>
 </div>
 
-<div class="box" id="measurementBox">
-    <h2>Measurement</h2>
-
-    <button onclick="sendMeasurement()">
-        Start Measurement with Selected Profile
-    </button>
-
-    <button onclick="sendStop()">
-        Stop Measurement
-    </button>
-
-    <button onclick="downloadData()">
-        Download Data
-    </button>
-
-    <div id="status" class="response"></div>
-</div>
-
-<div class="box">
-    <div id="error" class="response"></div>
-</div>
   
 <script type="text/javascript" src="script.js"></script>
 
