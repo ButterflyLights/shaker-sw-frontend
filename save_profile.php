@@ -16,52 +16,33 @@ if (!$data || !is_array($data)) {
     ]));
 }
 
-// Check if name exists
-if (!isset($data["name"])) {
-    die(json_encode([
-        "success" => false,
-        "error" => "Missing profile name"
-    ]));
-}
-
-$name = $data["name"];
-
-// Prepare check query
-$checkSql = "SELECT id FROM $table WHERE name = ? LIMIT 1";
-$checkStmt = $conn->prepare($checkSql);
-
-if (!$checkStmt) {
-    die(json_encode([
-        "success" => false,
-        "error" => "Prepare check failed: " . $conn->error
-    ]));
-}
-
-$checkStmt->bind_param("s", $name);
-$checkStmt->execute();
-
-$result = $checkStmt->get_result();
-
-if ($result->num_rows > 0) {
-    die(json_encode([
-        "success" => false,
-        "error" => "Profile with this name already exists"
-    ]));
-}
-
-$checkStmt->close();
-
 // Get column names from JSON
 $columns = array_keys($data);
-
-// Create placeholders (?, ?, ?)
-$placeholders = implode(", ", array_fill(0, count($columns), "?"));
 
 // Create column list
 $columnList = implode(", ", $columns);
 
+// Create placeholders (?, ?, ?)
+$placeholders = implode(", ", array_fill(0, count($columns), "?"));
+
+// Build update clause
+$updates = [];
+
+foreach ($columns as $column) {
+    if ($column !== "name") {
+        $updates[] = "$column = VALUES($column)";
+    }
+}
+
+$updateClause = implode(", ", $updates);
+
 // Build SQL query
-$sql = "INSERT INTO $table ($columnList) VALUES ($placeholders)";
+$sql = "
+    INSERT INTO $table ($columnList)
+    VALUES ($placeholders)
+    ON DUPLICATE KEY UPDATE
+    $updateClause
+";
 
 // Prepare statement
 $stmt = $conn->prepare($sql);

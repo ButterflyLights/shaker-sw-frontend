@@ -308,4 +308,4 @@ async function deleteProfile() {
 }
 
 loadProfiles();
-startPolling();
+// startPolling();
