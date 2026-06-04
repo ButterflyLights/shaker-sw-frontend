@@ -117,6 +117,7 @@ async function sendMeasurement() {
     
         msg = {
             command: "start-measurement",
+            profileId: selectedProfile.id,
             signalType: selectedProfile.type,
             signalParams: params
         };
