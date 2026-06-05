@@ -255,7 +255,8 @@ async function loadProfile(profileId) {
                     tbody.appendChild(row);
                 }
             }
-
+            
+            loadMeasurementsFromProfile(profileId);
 
         } else {
 
@@ -349,6 +350,53 @@ async function deleteProfile() {
     }
 }
 
+async function loadMeasurementsFromProfile(profileId) {
+    try {
+        const response = await fetch("get_measurements.php", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                profileId: profileId
+            })
+        });
+
+        const measurements = await response.json();
+        console.log(measurements);
+
+        const tbody =
+            document.querySelector("#measurementTable tbody");
+
+        tbody.innerHTML = "";
+
+        measurements.forEach(measurement => {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${measurement.id}</td>
+            `;
+
+            row.addEventListener("click", () => {
+                loadMeasurement(measurement.id);
+            });
+
+            tbody.appendChild(row);
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        displayError("Error loading measurements");
+    }
+}
+
+async function loadMeasurement(measurementId) {}
+
 loadProfiles();
-startPolling();
-createPlot();
+// startPolling();
