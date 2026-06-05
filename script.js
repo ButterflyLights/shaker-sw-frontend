@@ -58,6 +58,32 @@ async function sendRequest(payload) {
     return text;
 }
 
+function plotInputPSD() {
+
+    const trace = {
+        x: [0, 1, 2, 3, 4],
+        y: [0, 1, 4, 9, 16],
+        mode: "lines",
+        type: "scatter"
+    };
+
+    const layout = {
+        title: "Profile PSD",
+        xaxis: {
+            title: "f [Hz]"
+        },
+        yaxis: {
+            title: "PSD [V^2/Hz]" // TODO check units
+        }
+    };
+
+    Plotly.newPlot(
+        "inputPSD",
+        [trace],
+        layout
+    );
+}
+
 async function pollStatus() {
 
     try {
@@ -70,6 +96,13 @@ async function pollStatus() {
 
         document.getElementById("status").innerText =
             "Status: " + data.status;
+
+        if (data.status == "FINISHED") {
+            plotInputPSD();
+        }
+        else {
+            Plotly.purge("inputPSD");
+        }
 
     } catch (err) {
         console.error(err);
@@ -318,3 +351,4 @@ async function deleteProfile() {
 
 loadProfiles();
 startPolling();
+createPlot();
