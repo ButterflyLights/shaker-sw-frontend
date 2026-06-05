@@ -68,7 +68,7 @@ async function pollStatus() {
 
         console.log(data);
 
-        document.getElementById("response").innerText =
+        document.getElementById("status").innerText =
             "Status: " + data.status;
 
     } catch (err) {
@@ -317,4 +317,4 @@ async function deleteProfile() {
 }
 
 loadProfiles();
-// startPolling();
+startPolling();
