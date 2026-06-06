@@ -58,30 +58,34 @@ async function sendRequest(payload) {
     return text;
 }
 
-function plotInputPSD() {
+function plotPSD(x, y, title) {
 
     const trace = {
-        x: [0, 1, 2, 3, 4],
-        y: [0, 1, 4, 9, 16],
+        x: x,
+        y: y,
         mode: "lines",
         type: "scatter"
     };
 
     const layout = {
-        title: "Profile PSD",
+        title: title,
         xaxis: {
-            title: "f [Hz]"
+            title: "f [Hz]",
+            type: "log"
         },
         yaxis: {
-            title: "PSD [V^2/Hz]" // TODO check units
+            title: "PSD [V²/Hz]", // TODO check units
+            type: "log"
         }
     };
 
-    Plotly.newPlot(
-        "inputPSD",
-        [trace],
-        layout
-    );
+    // Plotly.newPlot(
+    //     "inputPSD",
+    //     [trace],
+    //     layout
+    // );
+
+    Plotly.react("inputPSD", [trace], layout);
 }
 
 async function pollStatus() {
@@ -98,7 +102,7 @@ async function pollStatus() {
             "Status: " + data.status;
 
         if (data.status == "FINISHED") {
-            plotInputPSD();
+            // plotPSD();
         }
         else {
             Plotly.purge("inputPSD");
@@ -396,7 +400,34 @@ async function loadMeasurementsFromProfile(profileId) {
     }
 }
 
-async function loadMeasurement(measurementId) {}
+async function loadMeasurement(measurementId) {
+    try {
+        const response = await fetch("load_measurement.php", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                id: measurementId
+            })
+        });
+
+        const measurement = await response.json();
+        console.log(measurement);        
+
+        plotPSD(measurement["measurementInputData"]["fAcc"], measurement["measurementInputData"]["psdAcc"], "Input PSD (Acceleration)");
+
+    } catch (err) {
+
+        console.error(err);
+
+        displayError("Error loading measurements");
+    }
+
+}
 
 loadProfiles();
 // startPolling();
