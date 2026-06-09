@@ -1,6 +1,7 @@
 let backendUrl = "http://localhost:8000/status"; // TODO: read from config file
 let pollingInterval = null;
 let selectedProfile = null;
+let statusOld = null;
 
 function omitId(obj) {
     const { id, ...rest } = obj;
@@ -22,19 +23,30 @@ function displayStatus(status) {
 function updateSelectedProfile() {
     for (var key in selectedProfile) {
         try {
-            if (key != "id" && selectedProfile[key] != null) {
-                if (typeof(selectedProfile[key]) == "number") {
-                    selectedProfile[key] = Number(document.getElementById(key).value);
-                }
-                else {
-                    selectedProfile[key] = document.getElementById(key).value;
+            if (key !== "id" && selectedProfile[key] != null) {
+                var element = document.getElementById(key);
+
+                if (!element) continue;
+
+                var newValue = (
+                    element instanceof HTMLInputElement ||
+                    element instanceof HTMLTextAreaElement ||
+                    element instanceof HTMLSelectElement
+                )
+                    ? element.value
+                    : element.innerHTML;
+
+                if (typeof selectedProfile[key] === "number") {
+                    selectedProfile[key] = Number(newValue);
+                } else {
+                    selectedProfile[key] = newValue;
                 }
             }
-          } catch(err) {
+        } catch (err) {
             console.log(err);
-          }
-          
+        }
     }
+
     console.log(selectedProfile);
 }
 
@@ -101,12 +113,13 @@ async function pollStatus() {
         document.getElementById("status").innerText =
             "Status: " + data.status;
 
-        if (data.status == "FINISHED") {
-            // plotPSD();
+        if (data.status == "FINISHED" && statusOld == "RUNNING") {
+            idLast = loadMeasurementsFromProfile(selectedProfile.id);
+            console.log("last id:", idLast);
+            loadMeasurement(idLast);
         }
-        else {
-            Plotly.purge("inputPSD");
-        }
+
+        statusOld = data.status;
 
     } catch (err) {
         console.error(err);
@@ -375,6 +388,7 @@ async function loadMeasurementsFromProfile(profileId) {
         const tbody =
             document.querySelector("#measurementTable tbody");
 
+        ids = []
         tbody.innerHTML = "";
 
         measurements.forEach(measurement => {
@@ -390,7 +404,11 @@ async function loadMeasurementsFromProfile(profileId) {
             });
 
             tbody.appendChild(row);
+
+            ids.push(measurement.id)
         });
+
+        return Math.max(ids);
 
     } catch (err) {
 
@@ -430,4 +448,4 @@ async function loadMeasurement(measurementId) {
 }
 
 loadProfiles();
-// startPolling();
+startPolling();
