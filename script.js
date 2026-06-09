@@ -108,14 +108,13 @@ async function pollStatus() {
 
         const data = await response.json();
 
-        console.log(data);
+        // console.log(data);
 
         document.getElementById("status").innerText =
             "Status: " + data.status;
 
         if (data.status == "FINISHED" && statusOld == "RUNNING") {
-            idLast = loadMeasurementsFromProfile(selectedProfile.id);
-            console.log("last id:", idLast);
+            idLast = await loadMeasurementsFromProfile(selectedProfile.id);
             loadMeasurement(idLast);
         }
 
@@ -408,7 +407,7 @@ async function loadMeasurementsFromProfile(profileId) {
             ids.push(measurement.id)
         });
 
-        return Math.max(ids);
+        return Math.max(...ids);
 
     } catch (err) {
 
