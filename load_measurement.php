@@ -21,7 +21,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 
-$measurementInputData = file_get_contents($row["path"] . "/u.json"); // TODO: fix large files
+$measurementInputData = file_get_contents($row["path"] . "/uPSD.json");
 
 // 3. return it
 echo json_encode([
