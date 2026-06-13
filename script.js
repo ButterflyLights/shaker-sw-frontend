@@ -435,7 +435,7 @@ async function loadMeasurement(measurementId) {
         const measurement = await response.json();
         console.log(measurement);        
 
-        plotPSD(measurement["measurementInputData"]["fAcc"], measurement["measurementInputData"]["psdAcc"], "Input PSD (Acceleration)");
+        plotPSD(measurement["inputPSDf"], measurement["inputPSDAcc"], "Input PSD (Acceleration)");
 
     } catch (err) {
 

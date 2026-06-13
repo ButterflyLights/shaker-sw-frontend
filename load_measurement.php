@@ -1,6 +1,7 @@
 <?php
 
-require "connect_db.php";
+require_once "read_file.php";
+require_once "connect_db.php";
 
 // Profil-ID aus Request lesen
 $data = json_decode(file_get_contents("php://input"), true);
@@ -21,11 +22,13 @@ $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 
-$measurementInputData = file_get_contents($row["path"] . "/uPSD.json");
+$inputPSDf = readBinaryArray($row["path"] . "/f.bin");
+$inputPSDAcc = readBinaryArray($row["path"] . "/psdAcc.bin");
 
 // 3. return it
 echo json_encode([
-    "measurementInputData" => json_decode($measurementInputData, true),
+    "inputPSDf" => $inputPSDf,
+    "inputPSDAcc" => $inputPSDAcc,
     "measurementOutputData" => "" // TODO: add data
 ]);
 
