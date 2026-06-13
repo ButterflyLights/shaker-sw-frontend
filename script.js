@@ -113,7 +113,7 @@ async function pollStatus() {
         document.getElementById("status").innerText =
             "Status: " + data.status;
 
-        if (data.status == "FINISHED" && statusOld == "RUNNING") {
+        if (data.status == "finished" && statusOld == "running") {
             idLast = await loadMeasurementsFromProfile(selectedProfile.id);
             loadMeasurement(idLast);
         }
