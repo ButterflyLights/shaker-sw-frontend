@@ -33,12 +33,18 @@
     <div class="box" id="profileDataBox">
         <h2>Profile Data</h2>
     
-        <button onclick="saveProfile()">
+        <button class="btn" onclick="saveProfile()">
             Save Profile
         </button>
     
-        <button onclick="deleteProfile()">
+        <button class="btn" onclick="deleteProfile()">
             Delete Profile
+        </button>
+
+        <input type="file" id="audioFile" class="audioInput" accept="audio/*">
+
+        <button class="btn" onclick="uploadAudio()">
+            Upload Audio File
         </button>
     
         <table id="profileDataTable">
@@ -72,15 +78,15 @@
     <div class="box" id="currentMeasurementBox">
         <h2>Current Measurement</h2>
     
-        <button onclick="sendMeasurement()">
+        <button class="btn" onclick="sendMeasurement()">
             Start Measurement with Selected Profile
         </button>
     
-        <button onclick="sendStop()">
+        <button class="btn" onclick="sendStop()">
             Stop Measurement
         </button>
     
-        <button onclick="downloadData()">
+        <button class="btn" onclick="downloadData()">
             Download Data
         </button>
     

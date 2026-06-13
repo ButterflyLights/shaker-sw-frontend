@@ -366,6 +366,29 @@ async function deleteProfile() {
     }
 }
 
+async function uploadAudio() {
+    document.getElementById('audioFile').click();
+}
+
+document.getElementById('audioFile').addEventListener('change', async function () {
+    if (!this.files.length) return;
+
+    const formData = new FormData();
+    formData.append('audioFile', this.files[0]);
+
+    try {
+        const response = await fetch('upload_audio.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.text();
+
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 async function loadMeasurementsFromProfile(profileId) {
     try {
         const response = await fetch("get_measurements.php", {
